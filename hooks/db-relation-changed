@@ -297,7 +297,8 @@ def setup_mediawiki():
     fh.close()
 
     # Refresh slave settings
-    scriptpath = os.dirname(__file__)
-    subprocess.check_call(os.path.join([scriptpath,'combine-dbservers']))
+    scriptpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),'combine-dbservers')
+    print "Running " + scriptpath
+    subprocess.check_call(scriptpath)
 
 setup_mediawiki()
