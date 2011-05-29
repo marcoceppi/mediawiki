@@ -22,4 +22,7 @@ if (file_exists('/etc/mediawiki/LocalSettings.php')
     $content = '<?php $wgDBservers = FALSE;';
 }
 
+# should be 0640 or rw-r-----
+umask(0027);
 file_put_contents('/etc/mediawiki/dbservers.php', $content);
+chgrp('/etc/mediawiki/dbservers.php', 'www-data');

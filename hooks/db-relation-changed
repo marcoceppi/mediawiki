@@ -286,13 +286,15 @@ def setup_mediawiki():
 
     # Write the mediawiki config - broken until dbservers.php is created
     fh = open('/etc/mediawiki/LocalSettings.php', "w")
-    do("chmod", "0644", '/etc/mediawiki/LocalSettings.php')
+    do("chmod", "0640", '/etc/mediawiki/LocalSettings.php')
+    do("chgrp", "www-data", '/etc/mediawiki/LocalSettings.php')
     fh.write(mediawiki_template % config)
     fh.close()
 
     # Write the AdminSettings config for updates
     fh = open('/etc/mediawiki/AdminSettings.php', "w")
-    do("chmod", "0644", '/etc/mediawiki/AdminSettings.php')
+    do("chmod", "0640", '/etc/mediawiki/AdminSettings.php')
+    do("chgrp", "www-data", '/etc/mediawiki/AdminSettings.php')
     fh.write(adminsettings_template % config)
     fh.close()
 

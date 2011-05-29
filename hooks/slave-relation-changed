@@ -49,6 +49,9 @@ if(count($dbservers) < 1)
 	@unlink('/etc/mediawiki/slaves.data');
 	exit(0);
 }
+
+# This file is only for root, desired mode is 0600
+umask(0077);
 file_put_contents('/etc/mediawiki/slaves.data', serialize($dbservers));
 $home = dirname(__FILE__);
 exec($home.'/combine-dbservers');
