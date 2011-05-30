@@ -26,22 +26,16 @@ if ($argv[0] == 'slave-relation-departed')
     $units = $newunits;
 }
 
-$relout = popen("relation-get slaveuser", "r");
-$value = stream_get_contents($relout);
-if (empty($value) || !$value)
-{
-    echo "Need a readonly user w/ replication client capabilities\n";
-    exec("relation-set slaveuser=1");
-    exit(0);
-}
-
 $dbservers = array();
 foreach ($units as $node)
 {
     $relout = popen("relation-get --format json - $node","r");
     $json = stream_get_contents($relout);
     $node = json_decode($json);
-    $dbservers[] = array('host'=>$node->host,'dbname'=>$node->database,'user'=>$node->user,'password'=>$node->password,'type'=>'mysql','load'=>1,'flags'=>DBO_DEFAULT); 
+    if ($node->slave == 'True')
+    {
+        $dbservers[] = array('host'=>$node->host,'dbname'=>$node->database,'user'=>$node->user,'password'=>$node->password,'type'=>'mysql','load'=>1,'flags'=>DBO_DEFAULT); 
+    }
 }
 
 if(count($dbservers) < 1)
