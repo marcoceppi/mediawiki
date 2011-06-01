@@ -5,7 +5,7 @@ if (file_exists('/etc/mediawiki/LocalSettings.php')
     && file_exists('/etc/mediawiki/slaves.data'))
 {
     $IP='/usr/share/mediawiki';
-    define(MEDIAWIKI, 1);
+    define('MEDIAWIKI', 1);
     chdir($IP);
     require('/etc/mediawiki/LocalSettings.php');
     $dbservers = array( array('host'=>$wgDBserver,
