@@ -1,6 +1,6 @@
 ensemble: formula
 name: mediawiki
-revision: 59
+revision: 62
 summary: "website engine for collaborative work"
 description: |
  MediaWiki is a wiki engine (a program for creating a collaboratively
@@ -18,3 +18,5 @@ requires:
 provides:
   website:
     interface: http
+  munin:
+    interface: munin-node
