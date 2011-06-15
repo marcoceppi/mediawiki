@@ -5,6 +5,8 @@ import tempfile
 import pprint
 import json
 
+from socket import getaddrinfo
+
 # all changes mean we should regen the file
 memcached_ips = []
 rl = subprocess.Popen("relation-list",stdout=subprocess.PIPE)
@@ -13,8 +15,8 @@ for memcached_unit in rl.stdout:
             stdout=subprocess.PIPE, close_fds=True)
     settings = json.loads(p.stdout.read().strip())
     try:
-        if len(settings['ip']) and len(settings['port']):
-            memcached_ips.append("'"+settings['ip']+":"+settings['port']+"'")
+        if 'host' in settings and 'port' in settings:
+            memcached_ips.append("'%s'" % getaddrinfo(settings['host'],int(settings['port']))[4][0:2].join(':'))
     except KeyError:
         print memcached_unit + " has no settings. ["+str(settings)+"]"
 
