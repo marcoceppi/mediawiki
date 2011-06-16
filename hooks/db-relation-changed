@@ -32,7 +32,6 @@ import MySQLdb
 
 upload_path = "/var/www/wp-uploads"
 config_file_path_template = "/etc/mediawiki/config-%s.php"
-hostname_url = "http://169.254.169.254/latest/meta-data/public-hostname"
 
 def do(*args):
     print "do", args
@@ -162,10 +161,7 @@ $wgEnableProfileInfo = false;
 
 def setup_mediawiki():
 
-    try:
-        hostname = urllib.urlopen(hostname_url).read().strip()
-    except:
-        hostname = 'localhost'
+    hostname = subprocess.check_output(['hostname','-f']).strip()
     remote_unit = os.environ.get("ENSEMBLE_REMOTE_UNIT")
 
     print "remote unit", remote_unit
