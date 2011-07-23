@@ -56,7 +56,7 @@ if ( $wgCommandLineMode ) {
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
 
-$wgSitename         = "Ensemblized Wiki";
+include dirname(__FILE__).'/config-settings.php';
 
 ## The URL base path to the directory containing the wiki;
 ## defaults for all runtime URL paths are based off of this.
@@ -128,7 +128,6 @@ $wgSecretKey = "%(secret_key)s";
 
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook':
-$wgDefaultSkin = 'monobook';
 
 ## For attaching licensing metadata to pages, and displaying an
 ## appropriate copyright notice / icon. GNU Free Documentation
@@ -250,13 +249,16 @@ def setup_mediawiki():
       do_install = False
     if do_install:
       # First time setup, we have to POST to the db and capture the LocalSettings.php
+      # This sysop is irrelevant, admins can be created by config settings.
+      sysop = check_output(['pwgen','16'])
+      sysop_password = check_output(['pwgen','16'])
       postargs = {'Sitename':'Ensemblized Wiki',
         'EmergencyContact':'webmaster@localhost',
         'LanguageCode':'en',
         'License':'none',
-        'SysopName':'WikiSysop',
-        'SysopPass':'change-me',
-        'SysopPass2':'change-me',
+        'SysopName':sysop,
+        'SysopPass':sysop_password,
+        'SysopPass2':sysop_password,
         'Shm':'none',
         'Email':'email_enabled',
         'Emailuser':'emailuser_enabled',
