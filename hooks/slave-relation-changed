@@ -34,7 +34,7 @@ foreach ($units as $node)
     $node = json_decode($json);
     if ($node->slave == 'True')
     {
-        $dbservers[] = array('host'=>$node->host,'dbname'=>$node->database,'user'=>$node->user,'password'=>$node->password,'type'=>'mysql','load'=>1,'flags'=>DBO_DEFAULT); 
+        $dbservers[] = array('host'=>$node->{'private-address'},'dbname'=>$node->database,'user'=>$node->user,'password'=>$node->password,'type'=>'mysql','load'=>1,'flags'=>DBO_DEFAULT); 
     }
 }
 

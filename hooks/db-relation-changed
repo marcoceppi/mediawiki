@@ -161,15 +161,9 @@ $wgEnableProfileInfo = false;
 
 def setup_mediawiki():
 
-    hostname = subprocess.check_output(['hostname','-f']).strip()
     remote_unit = os.environ.get("JUJU_REMOTE_UNIT")
 
     print "remote unit", remote_unit
-
-    # Check we haven't already been setup.
-    #if os.path.exists(config_file_path_template % hostname):
-    #    print "Already Configured, Exiting"
-    #    return
 
     p = subprocess.Popen(["relation-get", "--format", "json"],
                          stdout=subprocess.PIPE, close_fds=True)
@@ -186,18 +180,17 @@ def setup_mediawiki():
     database = settings.get("database")
     password = settings.get("password")
     user = settings.get("user")
-    host = settings.get("host")
+    private_address = settings.get("private-address")
 
     # Generate this the same way the installer does
     secret_key = open("/dev/urandom","r").read(32).encode('hex')
 
     # Ensure the remote unit has self configured.
     config = {
-        "database_host": host,
+        "database_host": private_address,
         "database": database,
         "database_password": password,
         "database_user": user,
-        "hostname": hostname,
         "secret_key": secret_key}
 
     # Verify we have all of our database settings.
@@ -237,7 +230,7 @@ def setup_mediawiki():
         print "index.html not present"
 
     # Write the adminsettings
-    connection = MySQLdb.connect(user=user, host=host, passwd=password, db=database)
+    connection = MySQLdb.connect(user=user, host=private_address, passwd=password, db=database)
     cursor = connection.cursor()
     do_install = None
     try:
@@ -263,7 +256,7 @@ def setup_mediawiki():
         'Enotif':'enotif_disabled',
         'Eauthent':'eauthent_enabled',
         'DBtype':'mysql',
-        'DBserver':host,
+        'DBserver':private_address,
         'DBname':database,
         'DBuser':user,
         'DBpassword':password,
@@ -298,5 +291,7 @@ def setup_mediawiki():
     scriptpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),'combine-dbservers')
     print "Running " + scriptpath
     subprocess.check_call(scriptpath)
+
+    subprocess.check_call(['open-port','80'])
 
 setup_mediawiki()

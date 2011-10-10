@@ -15,8 +15,8 @@ for memcached_unit in rl.stdout:
             stdout=subprocess.PIPE, close_fds=True)
     settings = json.loads(p.stdout.read().strip())
     try:
-        if 'host' in settings and 'port' in settings:
-            memcached_ips.append("'%s:%d'" % getaddrinfo(settings['host'],int(settings['port']))[0][4][0:2])
+        if 'private-address' in settings and 'port' in settings:
+            memcached_ips.append("'%s:%d'" % getaddrinfo(settings['private-address'],int(settings['port']))[0][4][0:2])
     except KeyError:
         print memcached_unit + " has no settings. ["+str(settings)+"]"
 
