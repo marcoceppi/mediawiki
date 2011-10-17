@@ -1,0 +1,59 @@
+#!/bin/sh
+set -e
+
+wikiname=`config-get name`
+skin=`config-get skin`
+logo=`config-get logo`
+admins=`config-get admins`
+
+if [ -n "$logo" ] ; then
+    wgLogo=$(
+    dldir=`mktemp -d logodir.XXXXXXXX`
+    cd $dldir
+    if wget $logo ; then
+        file=`ls`
+        mkdir -p /var/www/images
+        mv $file /var/www/images
+        chmod a+rx /var/www/images
+        chgrp www-data /var/www/images/$file
+        chmod g+r /var/www/images/$file
+        echo "/images/$file"
+    fi
+    cd /
+    rm -rf $dldir
+    )
+fi
+
+new_file=`mktemp /etc/mediawiki/config-settings.XXXXXXXXX.php`
+
+if [ -n "$wgLogo" ] ; then
+    wgLogo="'$wgLogo'"
+else
+    wgLogo="null"
+fi
+
+cat > $new_file <<EOF
+<?php
+\$wgSitename="${wikiname}";
+\$wgDefaultSkin="${skin}";
+\$wgLogo=$wgLogo;
+EOF
+
+chmod 0640 $new_file
+chgrp www-data $new_file
+
+cfile=/etc/mediawiki/config-settings.php
+[ ! -f $cfile ] || mv -f $cfile $cfile.old
+mv $new_file $cfile
+[ ! -f $cfile.old ] || rm $cfile.old
+
+cd /usr/share/mediawiki/maintenance
+for admin in $admins ; do
+    user=`echo $admin | cut -d: -f1`
+    pass=`echo $admin | cut -d: -f2`
+    output=`php createAndPromote.php --conf /etc/mediawiki/LocalSettings.php $user $pass`
+    if [ ! "$output" = "account exists." ] ; then
+        echo $output
+        exit 1
+    fi
+done
