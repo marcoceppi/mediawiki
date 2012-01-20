@@ -2,7 +2,7 @@
 
 home=`dirname $0`
 
-DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends -y -q install mediawiki php5-cli postfix python-mysqldb
+DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends -y -q install mediawiki php5-cli postfix python-mysqldb pwgen
 
 # Run config changed hook
 $home/config-changed

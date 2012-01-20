@@ -29,6 +29,7 @@ import tempfile
 import json
 import time
 import MySQLdb
+from subprocess import check_output
 
 upload_path = "/var/www/wp-uploads"
 config_file_path_template = "/etc/mediawiki/config-%s.php"
