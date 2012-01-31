@@ -1,0 +1,62 @@
+#!/bin/sh
+
+if [ -z "`which wget`" ] ; then
+    echo SKIP: need wget to run test.
+    exit 100
+fi
+
+set -e
+
+teardown() {
+    juju destroy-service memcached
+    juju destroy-service mysql
+    juju destroy-service mediawiki
+    if [ -n "$datadir" ] ; then
+        if [ -f $datadir/passed ]; then
+            rm -r $datadir
+        else
+            echo $datadir preserved
+        fi
+    fi
+}
+trap teardown EXIT
+
+
+juju deploy mediawiki
+juju deploy mysql
+juju deploy memcached
+juju add-relation mediawiki:db mysql:db
+juju add-relation memcached mediawiki
+juju expose mediawiki
+
+for try in `seq 1 600` ; do
+    host=`juju status | tests/get-unit-info mediawiki public-address`
+    if [ -z "$host" ] ; then
+        sleep 1 
+    else
+        break
+    fi
+done
+
+if [ -z "$host" ] ; then
+    echo FAIL: status timed out 
+    exit 1
+fi
+
+datadir=`mktemp -d ${TMPDIR:-/tmp}/wget.test.XXXXXXX`
+echo INFO: datadir=$datadir
+
+wget --tries=100 --timeout=6 http://$host/ -O - -a $datadir/wget.log | grep -q '<title>' || continue
+
+if [ $try -eq 600 ] ; then
+    echo FAIL: Timed out waiting.
+    exit 1
+fi
+
+touch $datadir/passed
+
+trap - EXIT
+teardown
+
+echo PASS: deployed successfully
+exit 0
