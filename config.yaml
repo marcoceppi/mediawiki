@@ -13,3 +13,7 @@ options:
     admins:
         description: Admin users to create, user:pass
         type: string
+    debug:
+        default: false
+        type: boolean
+        description: turn on debugging features of mediawiki

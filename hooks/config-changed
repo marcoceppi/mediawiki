@@ -39,6 +39,17 @@ cat > $new_file <<EOF
 \$wgLogo=$wgLogo;
 EOF
 
+if [ "`config-get --format json debug`" = "true" ] ; then
+    cat >> $new_file <<EOF
+\$wgDebugLogFile = "$CHARM_DIR/debug.log";
+\$wgDebugComments = true;
+\$wgShowExceptionDetails = true;
+\$wgShowSQLErrors = true;
+\$wgDebugDumpSql = true;
+\$wgShowDBErrorBacktrace = true;
+EOF
+fi
+
 chmod 0640 $new_file
 chgrp www-data $new_file
 
