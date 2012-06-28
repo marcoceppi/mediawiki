@@ -17,5 +17,3 @@ requires:
 provides:
   website:
     interface: http
-  munin:
-    interface: munin-node
