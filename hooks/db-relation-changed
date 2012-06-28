@@ -29,10 +29,12 @@ import tempfile
 import json
 import time
 import MySQLdb
-from subprocess import check_output
+from subprocess import check_output, check_call
 
 upload_path = "/var/www/wp-uploads"
 config_file_path_template = "/etc/mediawiki/config-%s.php"
+
+INSTALL_SCRIPT = '/usr/share/mediawiki/maintenance/install.php'
 
 def do(*args):
     print "do", args
@@ -244,33 +246,58 @@ def setup_mediawiki():
     if do_install:
       # First time setup, we have to POST to the db and capture the LocalSettings.php
       # This sysop is irrelevant, admins can be created by config settings.
-      sysop = check_output(['pwgen','16'])
-      sysop_password = check_output(['pwgen','16'])
-      postargs = {'Sitename':'juju-d Wiki',
-        'EmergencyContact':'webmaster@localhost',
-        'LanguageCode':'en',
-        'License':'none',
-        'SysopName':sysop,
-        'SysopPass':sysop_password,
-        'SysopPass2':sysop_password,
-        'Shm':'none',
-        'Email':'email_enabled',
-        'Emailuser':'emailuser_enabled',
-        'Enotif':'enotif_disabled',
-        'Eauthent':'eauthent_enabled',
-        'DBtype':'mysql',
-        'DBserver':private_address,
-        'DBname':database,
-        'DBuser':user,
-        'DBpassword':password,
-        'DBpassword2':password,
-      }
       try:
-        install = urllib.urlopen('http://localhost/mediawiki/config/index.php', urllib.urlencode(postargs))
-        print "install URL returned ",install.getcode()
-      except Exception as e:
-        print "WARNING: could not post to installer!"
-        print e
+          sysop = check_output(['pwgen','16']).strip()
+          sysop_password = check_output(['pwgen','16']).strip()
+          if os.path.exists(INSTALL_SCRIPT):
+              install_result = check_call(['php',
+                      INSTALL_SCRIPT,
+                      '--dbuser',user,
+                      '--dbpass',password,
+                      '--dbname',database,
+                      '--installdbuser',user,
+                      '--installdbpass',password,
+                      '--confpath','/etc/mediawiki',
+                      '--dbserver',private_address,
+                      '--dbtype','mysql',
+                      '--pass',sysop_password,
+                      check_output(['config-get','name']).strip(),
+                      sysop])
+          else:
+              postargs = {'Sitename':'juju-d Wiki',
+                'EmergencyContact':'webmaster@localhost',
+                'LanguageCode':'en',
+                'License':'none',
+                'SysopName':sysop,
+                'SysopPass':sysop_password,
+                'SysopPass2':sysop_password,
+                'Shm':'none',
+                'Email':'email_enabled',
+                'Emailuser':'emailuser_enabled',
+                'Enotif':'enotif_disabled',
+                'Eauthent':'eauthent_enabled',
+                'DBtype':'mysql',
+                'DBserver':private_address,
+                'DBname':database,
+                'DBuser':user,
+                'DBpassword':password,
+                'DBpassword2':password,
+              }
+              try:
+                install = urllib.urlopen('http://localhost/mediawiki/config/index.php', urllib.urlencode(postargs))
+                print "install URL returned ",install.getcode()
+              except Exception as e:
+                print "WARNING: could not post to installer!"
+                print e
+                raise Exception
+      except Exception, e:
+          print "Dropping mediawiki_juju_setup"
+          print e
+          try:
+              cursor.execute("drop table mediawiki_juju_setup")
+          except Exception, e:
+              print "Could not drop mediawiki_juju_setup"
+              print e
       # Sadly, we really have to discard this LocalSettings.php and re-build
       # it using the template, so that joins can just generate it without
       # trying to create the whole DB.
