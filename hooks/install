@@ -6,9 +6,6 @@ add-apt-repository -y ppa:clint-fewbar/fixes
 apt-get update
 apt-get --no-install-recommends -y -q install mediawiki php5-cli postfix python-mysqldb pwgen
 
-# Run config changed hook
-$home/config-changed
-
 # a bit hacky -- makes sure its there even if memcached is never related
 touch /etc/mediawiki/memcached_settings.php
 chmod 0644 /etc/mediawiki/memcached_settings.php
