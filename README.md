@@ -47,3 +47,7 @@ MediaWiki will already use whatever byte-code cache is specified in the charm's 
 
 ### MySQL Slave
 
+If you're running MySQL with a slave set up you can attach MediaWiki to those slaves directly as MediaWiki (both the application and service) can handle this. To 
+do so execute the following:
+
+
