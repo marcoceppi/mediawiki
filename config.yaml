@@ -1,19 +1,19 @@
 options:
-    name:
-        default: Please set name of wiki
-        description: The name, or Title of the Wiki
-        type: string
-    skin:
-        default: monobook
-        description: skin for the Wiki
-        type: string
-    logo:
-        description: URL to fetch logo from
-        type: string
-    admins:
-        description: Admin users to create, user:pass
-        type: string
-    debug:
-        default: false
-        type: boolean
-        description: turn on debugging features of mediawiki
+  name:
+    default: Please set name of wiki
+    description: The name, or Title of the Wiki
+    type: string
+  skin:
+    default: vector
+    description: skin for the Wiki
+    type: string
+  logo:
+    description: URL to fetch logo from
+    type: string
+  admins:
+    description: Admin users to create, user:pass
+    type: string
+  debug:
+    default: false
+    type: boolean
+    description: turn on debugging features of mediawiki
