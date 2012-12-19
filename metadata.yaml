@@ -17,6 +17,3 @@ requires:
 provides:
   website:
     interface: http
-peer:
-  loadbalancer:
-    interface: http
