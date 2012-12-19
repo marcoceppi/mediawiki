@@ -79,6 +79,24 @@ As the option implies, this sets the default skin for all new users and anonymou
 One limitation is already registered users will have whatever Skin was set as the default applied to their account. This is a [MediaWiki "limitation"][4]. See caveats 
 for more information on running Maintenance scripts.
 
+## Admins
+
+This will configure admin accounts for the MediaWiki instance. The expected format is user:pass
+
+    juju set mediawiki admins="tom:swordfish"
+
+This creates a user "tom" and sets their password to "swordfish". In the even you wish to add more than one admin at a time you can provide a list of user:pass values separated by a space " ":
+
+    juju set mediawiki admins="tom:swordfish mike:wazowsk1"
+
+This will create both of those users. At this time setting the admins option to noting ("") will neither add or remove any existing admins. It's simply skipped. To avoid having the password and usernames exposed consider running the following after you've set up admin accounts:
+
+    juju set mediawiki admins=""
+
+## Debug ($wgDebugLogFile)
+
+When set to true this option will enable the following MediaWiki options: `$wgDebugLogFile`, `$wgDebugComments`, `$wgShowExceptionDetails`, `$wgShowSQLErrors`, `$wgDebugDumpSql`, and `$wgShowDBErrorBacktrace`. A log file will be crated in the charm's root directory on each machine called "debug.log". For most providers this will be `/var/lib/juju/units/mediawiki-0/charm/debug.log`, where `mediawiki-0` is the name of the service and unit number.
+
 # Caveats
 
 ## Maintenance Scripts
