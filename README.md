@@ -144,6 +144,7 @@ Where `mediawiki` is the name of the service and `0` is the unit number. If you 
 ## Auto update
 
 When set to true auto-update will attempt to upgrade the running MediaWiki instances every 6 hours for all versions except precise numbers (1.19.2 or 1.20). All others, including wild-card X.Y.Z versions, will be upgraded when a new release is available for that type of version.
+During an upgrade, the MySQL database will be backed up, if the upgrade fails the charm will revert to the previous version and restore the database then mark the unit as configuration error.
 
 ## Debug ($wgDebugLogFile)
 
