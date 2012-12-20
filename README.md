@@ -93,6 +93,58 @@ This will create both of those users. At this time setting the admins option to 
 
     juju set mediawiki admins=""
 
+## Version
+
+In the event you wish to run a version of MediaWiki _other_ than what is provided by the [Ubuntu Archives][5] you can change this version option. Version configuration option has 
+several "magic" values to provide easy short cuts, all applicable values are as follow:
+
+### distro
+
+This is the default version and will install mediawiki from the [Ubuntu Archives][5]. This is typically the safest option.
+
+    juju set mediawiki version=distro
+
+### latest
+
+Latest installs the latest stable release from upstream. For backwards compatibility the option "upstream" is an alias of this. For this installation, MediaWiki will be installed from 
+the [upstream git repository][6] and the last stable tag checked out. This, coupled with the `auto-update` configuration option is a good way to insure you have the latest stable always running.
+
+    juju set mediawiki version=latest
+
+### nightly
+
+Nightly will install MediaWiki from the [Nightlies repo][7] and is not recommended for production. Instead this is designed for testing purposes. When coupled with the `auto-update` configuration option a 
+new version will be installed on a daily basis.
+
+    juju set mediawiki version=nightly
+
+### trunk
+
+This will pull whatever is the latest from the [MediaWiki git repository's][6] trunk. Not recommended for production. When paired with `auto-update` this will refresh the trunk approx every 30 mins.
+
+    juju set mediawiki version=trunk
+
+### X.Y.Z
+
+In addition to each of the "magic values", you can set a specific release of MediaWiki or a Wildcard match for a version number. For example, if you wish to use just the 1.20 release of MediaWiki set the 
+value of `version` to "1.20". If you want all minor releases under 1.20 set the value to `1.20.X` (Both `X` and `*` are valid wildcard flags).
+
+    juju set mediawiki version=1.19.2
+
+When paired with `auto-update` and a wildcard version, this charm will check for updates twice a day.
+
+    juju set mediawiki version="1.20.X"
+
+In the event a release version is provided but does not exist the service will be placed in an error state. To repair this: update the version to a working version the execute
+
+    juju resolved --retry mediawiki/0
+
+Where `mediawiki` is the name of the service and `0` is the unit number. If you have multiple MediaWiki units deployed you'll need to run this command for each.
+
+## Auto update
+
+When set to true auto-update will attempt to upgrade the running MediaWiki instances every 6 hours for all versions except precise numbers (1.19.2 or 1.20). All others, including wild-card X.Y.Z versions, will be upgraded when a new release is available for that type of version.
+
 ## Debug ($wgDebugLogFile)
 
 When set to true this option will enable the following MediaWiki options: `$wgDebugLogFile`, `$wgDebugComments`, `$wgShowExceptionDetails`, `$wgShowSQLErrors`, `$wgDebugDumpSql`, and `$wgShowDBErrorBacktrace`. A log file will be crated in the charm's root directory on each machine called "debug.log". For most providers this will be `/var/lib/juju/units/mediawiki-0/charm/debug.log`, where `mediawiki-0` is the name of the service and unit number.
