@@ -167,7 +167,7 @@ In the event you need to run a script on all machines at once you can use the fo
 
     maint_script_to_run=""
     
-    for unit in `juju status wordpress | egrep -E "machine: ([0-9])" | tr -d ' ' | cut -d ':' -f2`; do
+    for unit in `juju status mediawiki | egrep -E "machine: ([0-9])" | tr -d ' ' | cut -d ':' -f2`; do
         juju ssh $unit "php -q /var/www/maintenance/$maint_script_to_run"
     done
 
