@@ -5,6 +5,18 @@ wikiname=`config-get name`
 skin=`config-get skin`
 logo=`config-get logo`
 admins=`config-get admins`
+version=`config-get version`
+cur_version=`cat .mw-version`
+
+## First check if the version has been changed.
+if [ "$cur_version" -ne "$version" ]; then
+    # It has! Let's fetch the new version
+    ## - Magic to get the latest release, this should probably be something like
+    ##   in phpmyadmin charm or just pull from Git and use tags.
+    ## - Check for magic key words
+
+    echo "$version" > .mw-version
+fi
 
 if [ -n "$logo" ] ; then
     wgLogo=$(
