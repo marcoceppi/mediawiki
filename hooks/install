@@ -4,7 +4,10 @@ home=`dirname $0`
 
 add-apt-repository -y ppa:clint-fewbar/fixes
 apt-get update
-apt-get --no-install-recommends -y -q install mediawiki php5-cli postfix python-mysqldb pwgen
+apt-get --no-install-recommends -y -q install mediawiki php5-cli postfix python-mysqldb pwgen git-core
+
+# Get a copy of the git repo even if we never use it. It'll make future hooks fire a lot faster.
+git clone https://gerrit.wikimedia.org/r/p/mediawiki/core.git /opt/mediawiki
 
 # a bit hacky -- makes sure its there even if memcached is never related
 touch /etc/mediawiki/memcached_settings.php
