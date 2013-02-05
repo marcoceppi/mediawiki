@@ -111,6 +111,13 @@ the [upstream git repository][6] and the last stable tag checked out. This, coup
 
     juju set mediawiki version=latest
 
+### next
+
+This will install the "next" version of MediaWiki. When there are no `aplha`, `beta`, or `rc` git tags it will defer to the latest settings. When paired with `auto-update` configuration option, daily 
+checks will take place for new versions
+
+    juju set mediawiki version=next
+
 ### nightly
 
 Nightly will install MediaWiki from the [Nightlies repo][7] and is not recommended for production. Instead this is designed for testing purposes. When coupled with the `auto-update` configuration option a 
