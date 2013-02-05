@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 set -e
 
 wikiname=`config-get name`
@@ -6,14 +7,67 @@ skin=`config-get skin`
 logo=`config-get logo`
 admins=`config-get admins`
 version=`config-get version`
+version="${version,,}"
 cur_version=`cat .mw-version`
+charm_dir=`cwd`
+
+git_revs() {
+    local revs=`git log --tags --simplify-by-decoration --pretty="format:%at %d" | sort -nk1 --reverse | egrep -o '[0-9]+\.[0-9]+\.[0-9a-z]+'`
+    echo "$revs"
+}
+
+latest_tag() {
+    cd /opt/mediawiki/
+
+    git pull
+    local l_tag=`git_revs | egrep -E '(alpha|beta|rc)' | head -n1`
+
+    cd $charm_dir
+
+    echo "$l_tag"
+}
 
 ## First check if the version has been changed.
-if [ "$cur_version" -ne "$version" ]; then
+if [ "$cur_version" != "$version" ]; then
     # It has! Let's fetch the new version
     ## - Magic to get the latest release, this should probably be something like
     ##   in phpmyadmin charm or just pull from Git and use tags.
     ## - Check for magic key words
+
+    if [ "$cur_version" == "distro" ]; then
+        # We know we're not going to use distro anymore, so purge!
+        juju-log "Purging mediawiki package"
+        apt-get purge mediawiki
+    fi
+
+    ## Check for magic key words
+    if [ "$version" == "distro" ]; then
+        # This will use the clint-fewbar fixes PPA
+        # because that's what the charm used to do.
+        juju-log "Installing MediaWiki package."
+        apt-get install -y mediawiki
+    elif [ "$version" == "latest" ] || [ "$version" == "upstream" ]; then
+        latest=`latest_tag`
+
+        if [ -n "$latest" ]; then
+            cd /opt/mediawiki
+            git reset --hard $latest
+        else
+            juju-log "Can't find latest tag :("
+            exit 1
+        fi
+    elif [ "$version" == "next" ]; then
+        
+    elif [ "$version" == "nightly" ]; then
+        
+    elif [ "$version" == "trunk" ]; then
+        
+    else
+        # I hope this is a valid version, if not WE MAKE ERROR ON YOU.
+    fi
+
+    if [ "$cur_version" == "distro" ] || [ -z "; then
+        # We need to create symlinks 
 
     echo "$version" > .mw-version
 fi
